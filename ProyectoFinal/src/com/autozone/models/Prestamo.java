@@ -7,7 +7,7 @@ import com.autozone.annotations.NotNull;
 public class Prestamo {
 	
 	@NotNull
-	private String nombre;
+	private Integer id_miembro;
 	@NotNull
 	private Boolean disponible;
 	@NotNull
@@ -20,9 +20,9 @@ public class Prestamo {
 
 	
 	
-	public Prestamo(String nombre, Boolean disponible, String iSBN, Date fecha_prestamo, Date fecha_devolucion, Integer id_prestamo) {
+	public Prestamo(Integer id_miembro, Boolean disponible, String iSBN, Date fecha_prestamo, Date fecha_devolucion, Integer id_prestamo) {
 		super();
-		this.nombre = nombre;
+		this.id_miembro = id_miembro;
 		this.disponible = disponible;
 		ISBN = iSBN;
 		this.fecha_prestamo = fecha_prestamo;
@@ -44,12 +44,21 @@ public class Prestamo {
 
 
 
-	public String getNombre() {
-		return nombre;
+	
+	
+	
+	public Integer getId_miembro() {
+		return id_miembro;
 	}
 
-	
-	
+
+
+	public void setId_miembro(Integer id_miembro) {
+		this.id_miembro = id_miembro;
+	}
+
+
+
 	public String getISBN() {
 		return ISBN;
 	}
@@ -58,9 +67,7 @@ public class Prestamo {
 		ISBN = iSBN;
 	}
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
+	
 
 	public Boolean getDisponible() {
 		return disponible;

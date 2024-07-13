@@ -19,24 +19,34 @@ public class PrestamoDAO implements DAO<Prestamo, Integer> {
 	
 	LocalDate localDate = LocalDate.now( ZoneId.of( "America/Chihuahua" ) );
 	
+	
+	
+	public LocalDate getLocalDate() {
+		return localDate;
+	}
+
 	@Override
 	public void add(Prestamo prestamo) throws SQLException, IllegalArgumentException, IllegalAccessException{
 
 		Validator.validate(prestamo);
 		
-		String sql = "insert into tbl_prestamos(nombre, ISBN, disponible, fecha_prestamo, fecha_devolucion) values (?,?,?,?,?)";
+		String sql = "insert into tbl_prestamos(id_prestamo, id_miembro, ISBN, disponible, fecha_prestamo, fecha_devolucion) values (?,?,?,?,?,?)";
 		
 		try(Connection conn = DatabaseConnection.getInstance().getConnection();
 				PreparedStatement pstmt = conn.prepareStatement(sql)){
 			
-			pstmt.setString(1, prestamo.getNombre());
-			pstmt.setString(2, prestamo.getISBN());
-			pstmt.setBoolean(3, prestamo.getDisponible());
-			pstmt.setDate(4, prestamo.getFecha_prestamo());
-			pstmt.setDate(5, prestamo.getFecha_devolucion());
+			pstmt.setInt(1, prestamo.getId_prestamo());
+			pstmt.setInt(2, prestamo.getId_miembro());
+			pstmt.setString(3, prestamo.getISBN());
+			pstmt.setBoolean(4, prestamo.getDisponible());
+			pstmt.setDate(5, prestamo.getFecha_prestamo());
+			pstmt.setDate(6, prestamo.getFecha_devolucion());
 			
 			pstmt.executeUpdate();
-			System.out.println(prestamo.getNombre() + " | " + prestamo.getISBN() + " | " + prestamo.getDisponible() + " | " + prestamo.getFecha_prestamo() + prestamo.getFecha_devolucion() + " Agregado");
+			
+			prestamo = search("id_prestamo", Integer.toString(prestamo.getId_prestamo())).get(0);
+			System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", prestamo.getId_prestamo(),  prestamo.getId_miembro(), prestamo.getISBN(), prestamo.getDisponible(), prestamo.getFecha_prestamo(),prestamo.getFecha_devolucion(),"☑ Added");
+			//System.out.println(prestamo.getId_prestamo() + " | " + prestamo.getId_miembro() + " | " + prestamo.getISBN() + " | " + prestamo.getDisponible() + " | " + prestamo.getFecha_prestamo() + prestamo.getFecha_devolucion() + " Agregado");
 			//fileManager.writeToCSV(fetchRecords());
 			
 		}
@@ -47,13 +57,13 @@ public class PrestamoDAO implements DAO<Prestamo, Integer> {
 
 		Validator.validate(prestamo);
 		
-		String sql = "update tbl_prestamos set nombre = ?, ISBN = ?, disponiible = ?, fecha_prestamo = ?, fecha_devolucion = ?"
+		String sql = "update tbl_prestamos set id_miembro = ?, ISBN = ?, disponible = ?, fecha_prestamo = ?, fecha_devolucion = ?"
 				+ " where id_prestamo = ?";
 		
 		try(Connection conn = DatabaseConnection.getInstance().getConnection();
 				PreparedStatement pstmt = conn.prepareStatement(sql)){
 			
-			pstmt.setString(1, prestamo.getNombre());
+			pstmt.setInt(1, prestamo.getId_miembro());
 			pstmt.setString(2, prestamo.getISBN());
 			pstmt.setBoolean(3, prestamo.getDisponible());
 			pstmt.setDate(4, prestamo.getFecha_prestamo());
@@ -62,8 +72,39 @@ public class PrestamoDAO implements DAO<Prestamo, Integer> {
 		
 			
 			pstmt.executeUpdate();
-			System.out.println(prestamo.getId_prestamo() + " | " + prestamo.getNombre() + " | " + prestamo.getISBN() + " | " + prestamo.getDisponible() + " | " + prestamo.getFecha_prestamo() + prestamo.getFecha_devolucion() + " Actualizado");
+			
+			prestamo = search("id_prestamo", Integer.toString(prestamo.getId_prestamo())).get(0);
+			System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", prestamo.getId_prestamo(),  prestamo.getId_miembro(), prestamo.getISBN(), prestamo.getDisponible(), prestamo.getFecha_prestamo(),prestamo.getFecha_devolucion(),"☑ Updated");
+			//System.out.println(prestamo.getId_prestamo() + " | " + prestamo.getId_miembro() + " | " + prestamo.getISBN() + " | " + prestamo.getDisponible() + " | " + prestamo.getFecha_prestamo() + prestamo.getFecha_devolucion() + " Actualizado");
 			//fileManager.writeToCSV(fetchRecords());
+		}
+	}
+	
+	public void registerReturn(Prestamo prestamo) throws SQLException, IllegalArgumentException, IllegalAccessException{
+
+		
+		String sql = "update tbl_prestamos set disponible = ?, fecha_devolucion = ?"
+				+ " where id_prestamo = ?";
+		
+		Prestamo loaned = search("id_prestamo", Integer.toString(prestamo.getId_prestamo())).get(0);
+		
+		if(loaned == null) {System.out.println("No existing records with that loan id!");}
+		else {
+		try(Connection conn = DatabaseConnection.getInstance().getConnection();
+				PreparedStatement pstmt = conn.prepareStatement(sql)){
+			
+		
+			pstmt.setBoolean(1, prestamo.getDisponible());
+			pstmt.setDate(2, prestamo.getFecha_devolucion());
+			pstmt.setInt(3, prestamo.getId_prestamo());
+			pstmt.executeUpdate();
+			
+			prestamo = search("id_prestamo", Integer.toString(prestamo.getId_prestamo())).get(0);
+			
+			System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", prestamo.getId_prestamo(),  prestamo.getId_miembro(), prestamo.getISBN(), prestamo.getDisponible(), prestamo.getFecha_prestamo(),prestamo.getFecha_devolucion(),"☑ Return registered");
+			//System.out.println(prestamo.getId_prestamo() + " | " + prestamo.getId_miembro() + " | " + prestamo.getISBN() + " | " + prestamo.getDisponible() + " | " + prestamo.getFecha_prestamo() + prestamo.getFecha_devolucion() + " Actualizado");
+			//fileManager.writeToCSV(fetchRecords());
+		}
 		}
 	}
 	
@@ -72,12 +113,15 @@ public class PrestamoDAO implements DAO<Prestamo, Integer> {
 
 		
 		String sql = "delete from tbl_prestamos where id_prestamo = ?";
+		Prestamo prestamo = search("id_prestamo", id_prestamo.toString()).get(0);
 		
 		try(Connection conn = DatabaseConnection.getInstance().getConnection();
 				PreparedStatement pstmt = conn.prepareStatement(sql)){
 			
 					pstmt.setInt(1, id_prestamo);
 					pstmt.executeUpdate();
+					
+					System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", prestamo.getId_prestamo(),  prestamo.getId_miembro(), prestamo.getISBN(), prestamo.getDisponible(), prestamo.getFecha_prestamo(),prestamo.getFecha_devolucion(),"❌ Deleted");
 					System.out.println("Libro con id_prestamo: " + id_prestamo + " Borrado");
 					//fileManager.writeToCSV(fetchRecords());
 			
@@ -98,7 +142,7 @@ public class PrestamoDAO implements DAO<Prestamo, Integer> {
 				
 				while (rs.next()) {
 					prestamo = new Prestamo(
-							rs.getString("nombre"),
+							rs.getInt("id_miembro"),
 							rs.getBoolean("disponible"),
 							rs.getString("ISBN"),
 							rs.getDate("fecha_prestamo"),
@@ -135,7 +179,7 @@ public class PrestamoDAO implements DAO<Prestamo, Integer> {
 				
 				while (rs.next()) {
 					prestamo = new Prestamo(
-							rs.getString("nombre"),
+							rs.getInt("id_miembro"),
 							rs.getBoolean("disponible"),
 							rs.getString("ISBN"),
 							rs.getDate("fecha_prestamo"),

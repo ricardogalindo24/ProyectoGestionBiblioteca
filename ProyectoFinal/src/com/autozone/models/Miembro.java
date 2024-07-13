@@ -18,7 +18,7 @@ public class Miembro {
 		return id_miembro;
 	}
 
-	public void setId_miembro(int id_miembro) {
+	public void setId_miembro(Integer id_miembro) {
 		this.id_miembro = id_miembro;
 	}
 

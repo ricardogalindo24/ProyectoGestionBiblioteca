@@ -14,7 +14,7 @@ import com.autozone.models.Libro;
 //import com.autozone.utils.FileManager;
 import com.autozone.utils.Validator;
 
-public class LibroDAO implements DAO<Libro, String> {
+public class LibroDAO implements DAO<Libro, Integer> {
 	
 		//FileManager fileManager = new FileManager();
 		
@@ -22,18 +22,22 @@ public class LibroDAO implements DAO<Libro, String> {
 		public void add(Libro libro) throws SQLException, IllegalArgumentException, IllegalAccessException {
 			Validator.validate(libro);
 			
-			String sql = "insert into tbl_inventario(ISBN, titulo, autor, genero) values (?,?,?,?)";
+			String sql = "insert into tbl_inventario(id, ISBN, titulo, autor, genero) values (?,?,?,?,?)";
 			
 			try(Connection conn = DatabaseConnection.getInstance().getConnection();
 					PreparedStatement pstmt = conn.prepareStatement(sql)){
 				
-				pstmt.setString(1, libro.getISBN());
-				pstmt.setString(2, libro.getTitulo());
-				pstmt.setString(3, libro.getAutor());
-				pstmt.setString(4, libro.getGenero());
+				pstmt.setInt(1, libro.getId());
+				pstmt.setString(2, libro.getISBN());
+				pstmt.setString(3, libro.getTitulo());
+				pstmt.setString(4, libro.getAutor());
+				pstmt.setString(5, libro.getGenero());
 				
 				pstmt.executeUpdate();
-				System.out.println(libro.getISBN() + " | " + libro.getTitulo() + " | " + libro.getAutor() + " | " + libro.getGenero() + " Importado");
+				
+				libro = search("id", libro.getId().toString()).get(0);
+				System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s\n", libro.getId(),  libro.getISBN(), libro.getTitulo(), libro.getAutor(), libro.getGenero(),"☑ Added");
+				//System.out.println(libro.getId() + " | " + libro.getISBN() + " | " + libro.getTitulo() + " | " + libro.getAutor() + " | " + libro.getGenero() + " Importado");
 				//fileManager.writeToCSV(fetchRecords());
 				
 			}
@@ -43,35 +47,45 @@ public class LibroDAO implements DAO<Libro, String> {
 		public void update(Libro libro) throws SQLException, IllegalArgumentException, IllegalAccessException {
 			Validator.validate(libro);
 			
-			String sql = "update tbl_inventario set titulo = ?, autor = ?, genero = ?"
-					+ " where ISBN = ?";
+			String sql = "update tbl_inventario set ISBN = ?, titulo = ?, autor = ?, genero = ?"
+					+ " where id = ?";
 			
 			try(Connection conn = DatabaseConnection.getInstance().getConnection();
 					PreparedStatement pstmt = conn.prepareStatement(sql)){
 				
-				pstmt.setString(1, libro.getTitulo());
-				pstmt.setString(2, libro.getAutor());
-				pstmt.setString(3, libro.getGenero());
-				pstmt.setString(4, libro.getISBN());
+				
+				pstmt.setString(1, libro.getISBN());
+				pstmt.setString(2, libro.getTitulo());
+				pstmt.setString(3, libro.getAutor());
+				pstmt.setString(4, libro.getGenero());
+				pstmt.setInt(5, libro.getId());
 			
 				
 				pstmt.executeUpdate();
-				System.out.println(libro.getISBN() + " | " + libro.getTitulo() + " | " + libro.getAutor() + " | " + libro.getGenero() + " Actualizado");
+				
+				libro = search("id", libro.getId().toString()).get(0);
+				System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s\n", libro.getId(),  libro.getISBN(), libro.getTitulo(), libro.getAutor(), libro.getGenero(),"☑ Updated");
+				
+				//System.out.println(libro.getId() + " | " + libro.getISBN() + " | " + libro.getTitulo() + " | " + libro.getAutor() + " | " + libro.getGenero() + " Actualizado");
 				//fileManager.writeToCSV(fetchRecords());
 			}
 		}
 		
 		@Override
-		public void delete(String ISBN) throws SQLException {
+		public void delete(Integer id) throws SQLException {
 			
-			String sql = "delete from tbl_inventario where ISBN = ?";
+			String sql = "delete from tbl_inventario where id = ?";
+			
+			Libro libro = search("id", id.toString()).get(0);	
 			
 			try(Connection conn = DatabaseConnection.getInstance().getConnection();
 					PreparedStatement pstmt = conn.prepareStatement(sql)){
 				
-						pstmt.setString(1, ISBN);
+						pstmt.setInt(1, id);					
 						pstmt.executeUpdate();
-						System.out.println("Libro con ISBN: " + ISBN + " Borrado");
+						
+						System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s\n", libro.getId(),  libro.getISBN(), libro.getTitulo(), libro.getAutor(), libro.getGenero(),"❌ Deleted");
+						//System.out.println("Libro con Id: " + id + " Borrado");
 						//fileManager.writeToCSV(fetchRecords());
 				
 			}
@@ -90,13 +104,14 @@ public class LibroDAO implements DAO<Libro, String> {
 					
 					while (rs.next()) {
 						libro = new Libro(
+								rs.getInt("id"),
 								rs.getString("ISBN"),
 								rs.getString("titulo"),
 								rs.getString("autor"),
 								rs.getString("genero")
 						);
 					
-						libro.setISBN(rs.getString("ISBN"));
+						libro.setId(rs.getInt("id"));
 						libros.add(libro);
 						
 						
@@ -121,13 +136,14 @@ public class LibroDAO implements DAO<Libro, String> {
 					
 					while (rs.next()) {
 						libro = new Libro(
+								rs.getInt("id"),
 								rs.getString("ISBN"),
 								rs.getString("titulo"),
 								rs.getString("autor"),
 								rs.getString("genero")
 						);
 					
-						libro.setISBN(rs.getString("ISBN"));
+						libro.setId(rs.getInt("id"));
 						libros.add(libro);
 						
 						

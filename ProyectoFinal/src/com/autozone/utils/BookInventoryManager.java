@@ -73,12 +73,20 @@ public class BookInventoryManager implements DatabaseManager<Libro, LibroDAO> {
 		try{ 
 		
 		//info
-	
-		System.out.println("Type A to add books, D to delete a book, U to update an existing book, S to search, I to display inventory. Then press enter to continue.");
-		System.out.print("Action: ");
+		System.out.println("-----------------------------------------------------------------------------------");
+		System.out.println("Please select an option then press enter to continue: \n"); 
+		System.out.println("[A] to add books,"); 
+		System.out.println("[D] to delete a book,"); 
+		System.out.println("[U] to update an existing book,"); 
+		System.out.println("[S] to search,");
+		System.out.println("[I] to display inventory,"); 
+		System.out.println("[E] to exit this sub menu \n");
+		System.out.println("-----------------------------------------------------------------------------------\n");
+		
+		System.out.println("Action: ");
 		
 		//Capturamos los linea
-		this.action = scanner.next().toUpperCase();
+		this.action = scanner.nextLine().toUpperCase();
 		
 		if (action.equals("S") || action.equals("I")) {
 			loopList = false;
@@ -98,6 +106,7 @@ public class BookInventoryManager implements DatabaseManager<Libro, LibroDAO> {
 	
 	@Override
 	public Libro build(Scanner scanner) throws IllegalArgumentException, IllegalAccessException {
+		Integer id = null;
 		String ISBN = null;
 		String titulo = null;
 		String autor = null;
@@ -106,21 +115,25 @@ public class BookInventoryManager implements DatabaseManager<Libro, LibroDAO> {
 		try{ 
 		if (action.equals("D")) {
 			
-			System.out.print("ISBN: ");
-			ISBN = scanner.next().trim().toUpperCase();
+			System.out.println("ID: ");
+			id = Integer.valueOf(scanner.nextLine().trim());
 			titulo = ("");
+			
 		} else {
-			System.out.print("ISBN: ");
-			ISBN = scanner.next().trim().toUpperCase();
+			System.out.println("id: ");
+			id = Integer.valueOf(scanner.nextLine().trim());
+			
+			System.out.println("ISBN: ");
+			ISBN = scanner.nextLine().trim().toUpperCase();
 		
-			System.out.print("Título: ");
-			titulo = scanner.next().trim();
+			System.out.println("Título: ");
+			titulo = scanner.nextLine().trim();
 		
-			System.out.print("Autor: ");
-			autor = scanner.next().trim();
+			System.out.println("Autor: ");
+			autor = scanner.nextLine().trim();
 		
-			System.out.print("Género: ");
-			genero= scanner.next().trim();
+			System.out.println("Género: ");
+			genero= scanner.nextLine().trim();
 			
 		
 		}
@@ -128,7 +141,7 @@ public class BookInventoryManager implements DatabaseManager<Libro, LibroDAO> {
 			System.out.println("Error");
 			exception.printStackTrace();
 		}
-		Libro libro = new Libro(ISBN,titulo,autor,genero);
+		Libro libro = new Libro(id, ISBN, titulo, autor, genero);
 		Validator.validate(libro);
 		return libro;
 		
@@ -141,24 +154,28 @@ public class BookInventoryManager implements DatabaseManager<Libro, LibroDAO> {
 			switch(action){
 			
 			case "D":
-				System.out.println("Delete book with ISBN: "+ libro.getISBN()  + " ----- Add to batch <y/n> [Default: No]");
+				System.out.println("Delete book with ID: "+ libro.getId()  + " ----- Add to batch <y/n> [Default: No]");
 				break;
 			
 			case "A":
-				System.out.println("Add " + libro.getISBN() + " | " + libro.getTitulo() + " | " + libro.getAutor() + " | " + libro.getGenero() + " | "  + " ------ Add to batch <y/n> [Default: No]");
+				System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s\n", "id",  "ISBN", "title", "author", "Genre", "Action");
+				System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", libro.getId(),  libro.getISBN(), libro.getTitulo(), libro.getAutor(), libro.getGenero(), "Add", "------ Add to batch <y/n> [Default: No]");
+				//System.out.println("Add " + libro.getId() + " | " + libro.getISBN() + " | " + libro.getTitulo() + " | " + libro.getAutor() + " | " + libro.getGenero() + " | "  + " ------ Add to batch <y/n> [Default: No]");
 				break;
 			case "U":
-				System.out.println("Update " + libro.getISBN() + " | " + libro.getTitulo() + " | " + libro.getAutor() + " | " + libro.getGenero() + " | "  + " ------ Add to batch <y/n> [Default: No]");
+				System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s\n", "id",  "ISBN", "title", "author", "Genre", "Action");
+				System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", libro.getId(),  libro.getISBN(), libro.getTitulo(), libro.getAutor(), libro.getGenero(),"Update", "------ Update to batch <y/n> [Default: No]");
+				//System.out.println("Update " + libro.getId() + " | " + libro.getISBN() + " | " + libro.getTitulo() + " | " + libro.getAutor() + " | " + libro.getGenero() + " | "  + " ------ Add to batch <y/n> [Default: No]");
 				break;
 			}
 			
-			String option = scanner.next().trim();
+			String option = scanner.nextLine().trim();
 				
 			if(option.toUpperCase().equals("Y")) {
 				libros.add(libro);
-				System.out.println("Added to batch.");
+				System.out.println("☑ Added to batch.");
 		
-				} else { System.out.println("Not added to batch."); }
+				} else { System.out.println("❌ Not added to batch."); }
 		
 		} catch (Exception exception) {
 			System.out.println("Error");
@@ -174,12 +191,18 @@ public class BookInventoryManager implements DatabaseManager<Libro, LibroDAO> {
 		try {
 		switch(action){
 		
+		default:
+			System.out.println("Not a valid option! \n  ");
+			action = "E";
+			loopList = false;
+			break;
+			
 		case "A":
 			libroDAO.add(libro);
 			break;
 			
 		case "D":
-			libroDAO.delete(libro.getISBN());
+			libroDAO.delete(libro.getId());
 			break;
 			
 		case "U":
@@ -196,9 +219,10 @@ public class BookInventoryManager implements DatabaseManager<Libro, LibroDAO> {
 			try {
 				libros = libroDAO.fetchRecords();
 				System.out.println("Inventory:");
-				System.out.println("ISBN" + " | " + "Titulo" + " | " + "Autor" + " | " + "Genero" );
+				System.out.printf("%-20s%-20s%-20s%-20s%-20s\n", "id",  "ISBN", "title", "author", "Genre");
 				for (Libro l : libros) {
-					System.out.println(l.getISBN() + " | " + l.getTitulo() + " | " + l.getAutor() + " | " + l.getGenero() );
+					System.out.printf("%-20s%-20s%-20s%-20s%-20s\n", l.getId(),  l.getISBN(), l.getTitulo(), l.getAutor(), l.getGenero());
+					//System.out.println(l.getId() + " | " + l.getISBN() + " | " + l.getTitulo() + " | " + l.getAutor() + " | " + l.getGenero() );
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -206,10 +230,10 @@ public class BookInventoryManager implements DatabaseManager<Libro, LibroDAO> {
 			
 			break;
 			
-			
-		default:
-			System.out.println(libro.getISBN() + " | " + libro.getTitulo() + " | " + libro.getAutor() + " | " + libro.getGenero() + " | " + action + " Acción Inválida o no Definida");
+		case "E":
+			loopList = false;
 			break;
+			
 			}
 		
 		} catch (Exception exception) {
@@ -222,51 +246,66 @@ public class BookInventoryManager implements DatabaseManager<Libro, LibroDAO> {
 	public void searchQueryBuilder(LibroDAO libroDAO, Scanner scanner) {
 		
 		try {
-		System.out.println("Search by (1) ISBN [Default], (2) title, (3) author or (4) genre?");
-		String field = scanner.next().trim().toUpperCase();
+		System.out.println("-----------------------------------------------------------------------------------\n");
+		System.out.println("Search by: \n");
+		System.out.println("[1] id [Default]");
+		System.out.println("[2] ISBN");
+		System.out.println("[3] title");
+		System.out.println("[4] author");
+		System.out.println("[5] genre");
+		System.out.println("-----------------------------------------------------------------------------------\n");
+		
+		System.out.println("Selection: \n");
+		String field = scanner.nextLine().trim().toUpperCase();
 		String criteria;
 		List<Libro> libros = null;
 		
 		switch(field){
 		
 		case "1":
-			System.out.print("ISBN: ");
-			criteria = scanner.next().trim();
-			libros = libroDAO.search("ISBN", criteria);
+			System.out.println("id: ");
+			criteria = scanner.nextLine().trim();
+			libros = libroDAO.search("id", criteria);
 			break;
 			
 		case "2":
-			System.out.print("titulo: ");
-			criteria = scanner.next().trim();
-			libros =  libroDAO.search("titulo", criteria);
+			System.out.println("ISBN: ");
+			criteria = scanner.nextLine().trim();
+			libros =  libroDAO.search("ISBN", criteria);
 			break;
 			
 		case "3":
-			System.out.print("autor: ");
-			criteria = scanner.next().trim();
-			libros =  libroDAO.search("autor", criteria);
+			System.out.println("titulo: ");
+			criteria = scanner.nextLine().trim();
+			libros =  libroDAO.search("titulo", criteria);
 			break;
 			
 		case "4":
-			System.out.print("genero: ");
-			criteria = scanner.next().trim();
+			System.out.println("autor: ");
+			criteria = scanner.nextLine().trim();
+			libros =  libroDAO.search("autor",criteria);
+			break;
+		
+		case "5":
+			System.out.println("genero: ");
+			criteria = scanner.nextLine().trim();
 			libros =  libroDAO.search("genero",criteria);
 			break;
-			
 
 			
 		default:
-			System.out.print("ISBN: ");
-			criteria = scanner.next().trim();
-			libros = libroDAO.search("ISBN", criteria);
+			System.out.println("id: ");
+			criteria = scanner.nextLine().trim();
+			libros = libroDAO.search("id", criteria);
 			break;
 			}
 		System.out.println("Search results:");
-		System.out.println("ISBN" + " | " + "Titulo" + " | " + "Autor" + " | " + "Genero" );
+		System.out.printf("%-20s%-20s%-20s%-20s%-20s\n", "id",  "ISBN", "title", "author", "Genre");
+		//System.out.println("id" + " | " + "ISBN" + " | " + "Titulo" + " | " + "Autor" + " | " + "Genero" );
 		
 		for (Libro l : libros) { 
-			
-			System.out.println(l.getISBN() + " | " + l.getTitulo() + " | " + l.getAutor() + " | " + l.getGenero() );
+			System.out.printf("%-20s%-20s%-20s%-20s%-20s\n", l.getId(),  l.getISBN(), l.getTitulo(), l.getAutor(), l.getGenero());
+			//System.out.println(l.getId() + " | " + l.getISBN() + " | " + l.getTitulo() + " | " + l.getAutor() + " | " + l.getGenero() );
 		}
 		
 		} catch (Exception exception) {

@@ -75,11 +75,21 @@ public class MemberManager implements DatabaseManager<Miembro, MiembroDAO> {
 		
 		//info
 
-		System.out.println("Type A to add members, D to delete a member, U to update an existing member, S to search, I to display members. Then press enter to continue.");
-		System.out.print("Action: ");
+		
+		System.out.println("-----------------------------------------------------------------------------------");
+		System.out.println("Please select an option then press enter to continue: \n"); 
+		System.out.println("[A] to add members,"); 
+		System.out.println("[D] to delete a member,"); 
+		System.out.println("[U] to update an existing member,"); 
+		System.out.println("[S] to search,");
+		System.out.println("[I] to display all members,"); 
+		System.out.println("[E] to exit this sub menu \n");
+		System.out.println("-----------------------------------------------------------------------------------\n");
+		
+		System.out.println("Action: ");
 		
 		//Capturamos los linea
-		this.action = scanner.next().toUpperCase();
+		this.action = scanner.nextLine().toUpperCase();
 		
 		if (action.equals("S") || action.equals("I")) {
 			loopList = false;
@@ -104,15 +114,15 @@ public class MemberManager implements DatabaseManager<Miembro, MiembroDAO> {
 		try{ 
 		if (action.equals("D")) {
 			
-			System.out.print("id_miembro: ");
-			id_miembro = Integer.valueOf(scanner.next().trim());
+			System.out.println("id_miembro: ");
+			id_miembro = Integer.valueOf(scanner.nextLine().trim());
 			nombre = "Deleted";
 		} else {
-			System.out.print("id_miembro: ");
-			id_miembro = Integer.valueOf(scanner.next().trim());
+			System.out.println("id_miembro: ");
+			id_miembro = Integer.valueOf(scanner.nextLine().trim());
 		
 			System.out.println("Nombre:");
-			nombre = scanner.next().toUpperCase();
+			nombre = scanner.nextLine().toUpperCase();
 			
 		
 			
@@ -139,20 +149,22 @@ public class MemberManager implements DatabaseManager<Miembro, MiembroDAO> {
 				break;
 			
 			case "A":
-				System.out.println("Add " +  miembro.getNombre() + " Add to batch <y/n> [Default: No]");
+				System.out.printf("%-20s%-20s%-20s\n","Member id", "Name", "Action");
+				System.out.printf("%-20s%-20s%-20s%-20s\n",miembro.getId_miembro() , miembro.getNombre(), "Add", "----- Add to batch <y/n> [Default: No]");
 				break;
 			case "U":
-				System.out.println("Update " + miembro.getId_miembro() + " | " + miembro.getNombre() + " | "  + "  -----  Add to batch <y/n> [Default: No]");
+				System.out.printf("%-20s%-20s%-20s\n","Member id", "Name", "Action");
+				System.out.printf("%-20s%-20s%-20s%-20s\n",miembro.getId_miembro() , miembro.getNombre(), "Update", "----- Add to batch <y/n> [Default: No]");
 				break;
 			}
 			
-			String option = scanner.next().trim();
+			String option = scanner.nextLine().trim();
 				
 			if(option.toUpperCase().equals("Y")) {
 				miembros.add(miembro);
-				System.out.println("Added to batch. ");
+				System.out.println("☑ Added to batch. ");
 		
-				} else { System.out.println("Not added to batch. "); }
+				} else { System.out.println("❌ Not added to batch. "); }
 		
 		} catch (Exception exception) {
 			System.out.println("Error");
@@ -187,9 +199,9 @@ public class MemberManager implements DatabaseManager<Miembro, MiembroDAO> {
 				try {
 					miembros = miembroDAO.fetchRecords();
 					System.out.println("Inventory:");
-					System.out.println("id_miembro" + " | " + "nombre"  );
+					System.out.printf("%-20s%-20s\n", "Member id",  "Name");
 					for (Miembro m : miembros) {
-						System.out.println(m.getId_miembro() + " | " + m.getNombre()  );
+						System.out.printf("%-20s%-20s\n",m.getId_miembro(), m.getNombre());
 					}
 				} catch (SQLException e) {
 					e.printStackTrace();
@@ -197,9 +209,14 @@ public class MemberManager implements DatabaseManager<Miembro, MiembroDAO> {
 				
 				break;
 				
+			case "E":
+				loopList = false;
+				break;
 				
 			default:
-				System.out.println(action + " Acción Inválida o no Definida");
+				System.out.println("Not a valid option! \n  ");
+				action = "E";
+				loopList = false;
 				break;
 				}
 			
@@ -213,37 +230,47 @@ public class MemberManager implements DatabaseManager<Miembro, MiembroDAO> {
 		
 		try {
 		System.out.println("Search by (1) id_miembro [Default] or (2) nombre del miembro.");
-		String field = scanner.next().trim().toUpperCase();
+		
+		System.out.println("-----------------------------------------------------------------------------------\n");
+		System.out.println("Search by: \n");
+		System.out.println("[1] id_miembro [Default]");
+		System.out.println("[2] Member's name");
+		System.out.println("-----------------------------------------------------------------------------------\n");
+		
+		System.out.println("Selection: \n");
+		
+		
+		String field = scanner.nextLine().trim().toUpperCase();
 		String criteria;
 		List<Miembro> miembros = null;
 		
 		switch(field){
 		
 		case "1":
-			System.out.print("id_miembro: ");
-			criteria = scanner.next().trim();
+			System.out.println("id_miembro: ");
+			criteria = scanner.nextLine().trim();
 			miembros = miembroDAO.search("id_miembro", criteria);
 			break;
 			
 		case "2":
-			System.out.print("nombre: ");
-			criteria = scanner.next().trim();
+			System.out.println("nombre: ");
+			criteria = scanner.nextLine().trim();
 			miembros =  miembroDAO.search("nombre", criteria);
 			break;
 			
 	
 		default:
-			System.out.print("id_miembro: ");
-			criteria = scanner.next().trim();
+			System.out.println("id_miembro: ");
+			criteria = scanner.nextLine().trim();
 			miembros = miembroDAO.search("id_miembro", criteria);
 			break;
 			}
 		System.out.println("Search results:");
-		System.out.println("id_miembro" + " | " + "nombre" );
+		System.out.printf("%-20s%-20s\n", "Member id",  "Name");
 		
 		for (Miembro m : miembros) { 
 			
-			System.out.println(m.getId_miembro() + " | " + m.getNombre()  );
+			System.out.printf("%-20s%-20s\n",m.getId_miembro(), m.getNombre());
 		}
 		
 		} catch (Exception exception) {

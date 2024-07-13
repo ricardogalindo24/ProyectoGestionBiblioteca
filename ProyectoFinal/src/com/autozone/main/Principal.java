@@ -18,36 +18,55 @@ public class Principal {
 		Scanner scanner = inputReader.getScanner();
 		Boolean loop = true;
 				
-		
+		System.out.println(" _________________________________________________________");
+		System.out.println("|                                                         |");
+		System.out.println("|                   LibraryManager v0.2                   |");
+		System.out.println("|                     Ricardo Galindo                     |");
+		System.out.println("|                     Gear Up for IT                      |");
+		System.out.println("|_________________________________________________________| \n \n \n");
 		while (loop == true) {
-		System.out.println("LibraryManager v0.1");
-		System.out.println("Do you want to (1) manage book inventory, (2) manage members, (3) manage loans? Any other key to exit.");
-		System.out.print("Type selection:");
 		
-		String selection = scanner.next().trim();
+		System.out.println("-----------------------------------------------------------------------------------");
+		System.out.println("Please select an option then press enter to continue: \n" ); 
+		
+		System.out.println("[B] to manage book inventory");
+		System.out.println("[M] to manage members");
+		System.out.println("[L] to manage loans");
+		System.out.println("[E] to exit. \n");
+		System.out.println("-----------------------------------------------------------------------------------\n");
+		
+		System.out.println("Selection: ");
+		
+		String selection = scanner.nextLine().trim().toUpperCase();
 		
 		
 			
 		switch(selection) {
 		
-		 case "1":
+		 case "B":
 			 BookInventory bookInventory = new BookInventory();
 			 bookInventory.run(scanner);
 			 break;
 			 
-		 case "2":
+		 case "M":
 			MemberList memberList = new MemberList();
 			memberList.run(scanner);
 			 break;
 			 
-		 case "3":
+		 case "L":
 		 
 			LoanRecords loanRecords = new LoanRecords();
 			loanRecords.run(scanner);
 			 break;
-		
-		default:
+			 
+		 case "E":
+			 
 			loop = false;
+			break;
+		
+		 default:
+			System.out.println("Not a valid option! \n \n \n");
+			InputReader.getInstance().promptEnterKey(scanner);
 		
 			 
 		}}

@@ -20,15 +20,19 @@ public class MiembroDAO implements DAO<Miembro, Integer> {
 
 		Validator.validate(miembro);
 		
-		String sql = "insert into tbl_miembros(nombre) values (?)";
+		String sql = "insert into tbl_miembros(id_miembro, nombre) values (?, ?)";
 		
 		try(Connection conn = DatabaseConnection.getInstance().getConnection();
 				PreparedStatement pstmt = conn.prepareStatement(sql)){
 			
-			pstmt.setString(1, miembro.getNombre());
+			pstmt.setInt(1, miembro.getId_miembro());
+			pstmt.setString(2, miembro.getNombre());
 			pstmt.executeUpdate();
 			
-			System.out.println(miembro.getNombre() + " Añadido");
+			miembro = search("id_miembro", Integer.toString(miembro.getId_miembro())).get(0);
+			System.out.printf("%-20s%-20s%-20s\n", miembro.getId_miembro(),  miembro.getNombre(),"☑ Added");
+			
+			//System.out.println(miembro.getId_miembro() + " | " + miembro.getNombre() + " Añadido");
 			//fileManager.writeToCSV(fetchRecords());
 			
 		}
@@ -49,7 +53,10 @@ public class MiembroDAO implements DAO<Miembro, Integer> {
 		
 			
 			pstmt.executeUpdate();
-			System.out.println(miembro.getId_miembro() + " | " + miembro.getNombre() +  " Actualizado");
+			
+			miembro = search("id_miembro", Integer.toString(miembro.getId_miembro())).get(0);
+			System.out.printf("%-20s%-20s%-20s\n", miembro.getId_miembro(),  miembro.getNombre(),"☑ Updated");
+			//System.out.println(miembro.getId_miembro() + " | " + miembro.getNombre() +  " Actualizado");
 			//fileManager.writeToCSV(fetchRecords());
 		}
 	}
@@ -59,13 +66,16 @@ public class MiembroDAO implements DAO<Miembro, Integer> {
 
 		
 		String sql = "delete from tbl_miembros where id_miembro = ?";
+		Miembro miembro = search("id_miembro", id_miembro.toString()).get(0);
 		
 		try(Connection conn = DatabaseConnection.getInstance().getConnection();
 				PreparedStatement pstmt = conn.prepareStatement(sql)){
 			
 					pstmt.setInt(1, id_miembro);
+	
 					pstmt.executeUpdate();
-					System.out.println("Miembro con id_miembro: " + id_miembro + " Borrado");
+					System.out.printf("%-20s%-20s%-20s\n", miembro.getId_miembro(),  miembro.getNombre(),"❌ Deleted");
+					//System.out.println("Miembro con id_miembro: " + id_miembro + " Borrado");
 					//fileManager.writeToCSV(fetchRecords());
 			
 		}

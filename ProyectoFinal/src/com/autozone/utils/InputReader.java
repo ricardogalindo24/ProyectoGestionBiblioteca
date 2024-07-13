@@ -23,7 +23,11 @@ public class InputReader {
     public Scanner getScanner() {
 		return scanner;
 	}
-
+    
+    public void promptEnterKey(Scanner scanner){
+    	   System.out.println("Press \"ENTER\" to continue...");
+    	   scanner.nextLine();
+    	}
 
 
 
