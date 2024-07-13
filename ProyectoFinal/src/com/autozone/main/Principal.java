@@ -21,7 +21,7 @@ public class Principal {
 				
 		System.out.println(" _________________________________________________________");
 		System.out.println("|                                                         |");
-		System.out.println("|                   LibraryManager v0.2                   |");
+		System.out.println("|                   LibraryManager v1.0                   |");
 		System.out.println("|                     Ricardo Galindo                     |");
 		System.out.println("|                     Gear Up for IT                      |");
 		System.out.println("|_________________________________________________________| \n \n \n");
