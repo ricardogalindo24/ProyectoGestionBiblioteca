@@ -78,7 +78,7 @@ public class FileManager {
 	public List<ObjectAccion> booksFromCSV(String filename) {
 		List<ObjectAccion> librosAccion = new ArrayList<>();
 		
-		try {List<String> lines = Files.readAllLines(Paths.get(filepath+filename));
+		try {List<String> lines = Files.readAllLines(Paths.get(filename));
 		
 			for(int i = 1; i < lines.size(); i++) {
 				String line = lines.get(i);
@@ -106,7 +106,7 @@ public class FileManager {
 	public List<ObjectAccion> membersFromCSV(String filename) {
 		List<ObjectAccion> miembrosAccion = new ArrayList<>();
 		
-		try {List<String> lines = Files.readAllLines(Paths.get(filepath+filename));
+		try {List<String> lines = Files.readAllLines(Paths.get(filename));
 		
 			for(int i = 1; i < lines.size(); i++) {
 				String line = lines.get(i);
@@ -134,7 +134,7 @@ public class FileManager {
 		LocalDate localDate = LocalDate.now( ZoneId.of( "America/Chihuahua" ));
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		
-		try {List<String> lines = Files.readAllLines(Paths.get(filepath+filename));
+		try {List<String> lines = Files.readAllLines(Paths.get(filename));
 		
 			for(int i = 1; i < lines.size(); i++) {
 				String line = lines.get(i);
