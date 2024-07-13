@@ -2,11 +2,11 @@ package com.autozone.main;
 
 import java.util.Scanner;
 
-import com.autozone.annotations.subclasses.BookInventory;
-import com.autozone.annotations.subclasses.FileManagerMenu;
-import com.autozone.annotations.subclasses.LoanRecords;
-import com.autozone.annotations.subclasses.MemberList;
 import com.autozone.exceptions.IsClosedException;
+import com.autozone.subMenus.BookInventory;
+import com.autozone.subMenus.FileManagerMenu;
+import com.autozone.subMenus.LoanRecords;
+import com.autozone.subMenus.MemberList;
 import com.autozone.utils.InputReader;
 
 public class Principal {

@@ -1,4 +1,5 @@
-package com.autozone.annotations.subclasses;
+package com.autozone.subMenus;
+
 
 
 import java.util.Arrays;
@@ -7,29 +8,29 @@ import java.util.Scanner;
 
 import com.autozone.exceptions.IsClosedException;
 import com.autozone.interfaces.Inventory;
-import com.autozone.models.Miembro;
+import com.autozone.models.Libro;
+import com.autozone.utils.BookInventoryManager;
 import com.autozone.utils.InputReader;
-import com.autozone.utils.MemberManager;
 
 
 
-public class MemberList extends MemberManager implements Inventory{
-		
+public class BookInventory extends BookInventoryManager implements Inventory{
+	
+	
+	
 	public void run(Scanner scanner) throws IllegalArgumentException, IllegalAccessException, IsClosedException {
 	
-		
-		
 		setScanner(scanner);
 		setAction(getScanner());
-
+		
 		List<String> validOptions = Arrays.asList("A", "U", "D", "S", "I");
 		Boolean valid = validOptions.contains(getAction());
 		
 		if(getLoopList() == true && valid) {
 		while (getLoopList() == true) {
-			Miembro miembro = build(getScanner());
-			addtoBatchList(getmiembros(),miembro,getScanner());
-			System.out.println("Add another record to batch?  <y/n> [Default: No]: ");
+			Libro libro = build(getScanner());
+			addtoBatchList(getLibros(),libro,getScanner());
+			System.out.println("Add another record to batch?  <y/n> [Default: No]:");
 			String option = getScanner().nextLine().trim().toUpperCase();
 		
 			if (option.equals("Y")) {
@@ -40,22 +41,19 @@ public class MemberList extends MemberManager implements Inventory{
 			//getScanner().close();
 			}
 		}
-		System.out.printf("%-20s%-20s%-20s\n", "Member id", "Name","INFO");
-		for (Miembro m : getmiembros()) { 
+		System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s\n", "id",  "ISBN", "Title", "Author", "Genre","INFO");
+		for (Libro l : getLibros()) { 
 			
-			executeAction(getMiembroDAO(), m, getAction());
-		}} else {executeAction(getMiembroDAO(), null, getAction());
+			executeAction(getLibroDAO(), l, getAction());
+		}} else {executeAction(getLibroDAO(), null, getAction());
 		}
 		
 		if(!getAction().equals("E")) {
-			InputReader.getInstance().promptEnterKey(getScanner());
-			
-			}
-			
-		}
+		InputReader.getInstance().promptEnterKey(getScanner());
 		
-		
-		}
+									}
+					}
+	}
 	
 	
 
