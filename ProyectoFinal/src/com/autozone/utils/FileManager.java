@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import com.autozone.models.Libro;
 import com.autozone.models.Miembro;
@@ -71,8 +72,9 @@ public class FileManager {
 		return filename;
 	}
 
-	public void setFilename(String filename) {
-		this.filename = filename;
+	public void setFilename(Scanner scanner) {
+		System.out.println("Input file path: ");
+		this.filename = scanner.nextLine().trim().toUpperCase();
 	}
 
 	public List<ObjectAccion> booksFromCSV(String filename) {
