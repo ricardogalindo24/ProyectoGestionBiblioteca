@@ -1,21 +1,21 @@
 package com.autozone.models;
 
-public class LibroAccion {
-	private Libro libro;
+public class ObjectAccion {
+	private Object obj;
 	private String action;
 	
-	public LibroAccion(Libro libro, String action) {
+	public ObjectAccion(Object obj, String action) {
 		super();
-		this.libro = libro;
+		this.obj = obj;
 		this.action = action;
 	}
 
-	public Libro getLibro() {
-		return libro;
+	public Object getObj() {
+		return obj;
 	}
 
-	public void setLibro(Libro libro) {
-		this.libro = libro;
+	public void setObj(Object obj) {
+		this.obj = obj;
 	}
 
 	public String getAction() {
@@ -25,6 +25,6 @@ public class LibroAccion {
 	public void setAction(String action) {
 		this.action = action;
 	}
-	
+
 	
 }

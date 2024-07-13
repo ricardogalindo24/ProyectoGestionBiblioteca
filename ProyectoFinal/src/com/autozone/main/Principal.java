@@ -3,6 +3,7 @@ package com.autozone.main;
 import java.util.Scanner;
 
 import com.autozone.annotations.subclasses.BookInventory;
+import com.autozone.annotations.subclasses.FileManagerMenu;
 import com.autozone.annotations.subclasses.LoanRecords;
 import com.autozone.annotations.subclasses.MemberList;
 import com.autozone.exceptions.IsClosedException;
@@ -32,6 +33,7 @@ public class Principal {
 		System.out.println("[B] to manage book inventory");
 		System.out.println("[M] to manage members");
 		System.out.println("[L] to manage loans");
+		System.out.println("[U] to upload from text file");
 		System.out.println("[E] to exit. \n");
 		System.out.println("-----------------------------------------------------------------------------------\n");
 		
@@ -57,6 +59,11 @@ public class Principal {
 		 
 			LoanRecords loanRecords = new LoanRecords();
 			loanRecords.run(scanner);
+			 break;
+			 
+		 case "U":
+			 FileManagerMenu fileManagerMenu  = new FileManagerMenu();
+			 fileManagerMenu.run(scanner);
 			 break;
 			 
 		 case "E":
