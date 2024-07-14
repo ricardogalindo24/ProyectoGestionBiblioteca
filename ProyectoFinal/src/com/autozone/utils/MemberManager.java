@@ -4,9 +4,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-
-import com.autozone.annotations.NotNull;
-import com.autozone.annotations.ValidAction;
 import com.autozone.dao.MiembroDAO;
 import com.autozone.interfaces.DatabaseManager;
 import com.autozone.models.Miembro;
@@ -14,15 +11,16 @@ import com.autozone.models.Miembro;
 
 public class MemberManager implements DatabaseManager<Miembro, MiembroDAO> {
 	
-	@NotNull
-	@ValidAction
+	
 	String action;
+	String option;
 	//variable para determinar si se desean agregar mas libros a la lista de trabajo
 	Boolean loopList;
-	
+	Boolean skip = false;
 	Scanner scanner;
 	List<Miembro> miembros = new ArrayList<>();
 	MiembroDAO miembroDAO = new MiembroDAO();
+	SingleValueSearch sv = new SingleValueSearch();
 	
 	
 	public MiembroDAO getMiembroDAO() {
@@ -112,17 +110,31 @@ public class MemberManager implements DatabaseManager<Miembro, MiembroDAO> {
 		Integer id_miembro = null;
 	
 		try{ 
-		if (action.equals("D")) {
+		switch (action) {
+			
+		case "D":
+			System.out.println("id_miembro: ");
+			id_miembro = Integer.valueOf(scanner.nextLine().trim());
+			if(sv.integerExists("tbl_miembros", id_miembro, "id_miembro") == false) {System.out.println("Member ID does not exist! "); skip = true; break;}
+			nombre = "Deleted";
+			break;
+		
+		case "A":
+			
+			System.out.println("Nombre:");
+			nombre = scanner.nextLine().toUpperCase();
+			if(sv.stringExists("tbl_miembros", nombre, "nombre") == true) {System.out.println("Member already registered! "); skip = true; break;}
+			break;
+			
+		default:
 			
 			System.out.println("id_miembro: ");
 			id_miembro = Integer.valueOf(scanner.nextLine().trim());
-			nombre = "Deleted";
-		} else {
-			System.out.println("id_miembro: ");
-			id_miembro = Integer.valueOf(scanner.nextLine().trim());
-		
+			if(sv.integerExists("tbl_miembros", id_miembro, "id_miembro") == false) {System.out.println("Member ID does not exist! "); skip = true; break;}
+			
 			System.out.println("Nombre:");
 			nombre = scanner.nextLine().toUpperCase();
+			break;
 			
 		
 			
@@ -150,7 +162,7 @@ public class MemberManager implements DatabaseManager<Miembro, MiembroDAO> {
 			
 			case "A":
 				System.out.printf("%-20s%-20s%-20s\n","Member id", "Name", "Action");
-				System.out.printf("%-20s%-20s%-20s%-20s\n",miembro.getId_miembro() , miembro.getNombre(), "Add", "----- Add to batch <y/n> [Default: No]");
+				System.out.printf("%-20s%-20s%-20s%-20s\n", "Auto Generate" , miembro.getNombre(), "Add", "----- Add to batch <y/n> [Default: No]");
 				break;
 			case "U":
 				System.out.printf("%-20s%-20s%-20s\n","Member id", "Name", "Action");
@@ -158,13 +170,17 @@ public class MemberManager implements DatabaseManager<Miembro, MiembroDAO> {
 				break;
 			}
 			
-			String option = scanner.nextLine().trim();
-				
-			if(option.toUpperCase().equals("Y")) {
-				miembros.add(miembro);
-				System.out.println("☑ Added to batch. ");
-		
-				} else { System.out.println("❌ Not added to batch. "); }
+			if(skip == false) {
+				option = scanner.nextLine().trim();
+					
+				if(option.toUpperCase().equals("Y")) {
+					miembros.add(miembro);
+					System.out.println("☑ Added to batch. ");
+			
+					} else { System.out.println("❌ Not added to batch. "); }}
+				else { 
+				skip = false; 
+				System.out.println("❌ Record skipped: Not added to batch. ");}
 		
 		} catch (Exception exception) {
 			System.out.println("Error");

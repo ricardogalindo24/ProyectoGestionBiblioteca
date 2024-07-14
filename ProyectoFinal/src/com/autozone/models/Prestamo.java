@@ -2,15 +2,14 @@ package com.autozone.models;
 
 import java.sql.Date;
 
-import com.autozone.annotations.NotNull;
 
 public class Prestamo {
 	
-	@NotNull
+
 	private Integer id_miembro;
-	@NotNull
+
 	private Boolean disponible;
-	@NotNull
+
 	private String ISBN;
 	private Date fecha_prestamo;
 	private Date fecha_devolucion;

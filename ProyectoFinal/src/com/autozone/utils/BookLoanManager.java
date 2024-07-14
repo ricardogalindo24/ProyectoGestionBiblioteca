@@ -7,23 +7,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import com.autozone.annotations.NotNull;
-import com.autozone.annotations.ValidAction;
 import com.autozone.dao.PrestamoDAO;
 import com.autozone.interfaces.DatabaseManager;
 import com.autozone.models.Prestamo;
 
 public class BookLoanManager implements DatabaseManager<Prestamo, PrestamoDAO> {
 	
-	@NotNull
-	@ValidAction
+	
 	String action;
+	String option;
 	//variable para determinar si se desean agregar mas libros a la lista de trabajo
 	Boolean loopList;
+	Boolean skip = false;
 	
 	Scanner scanner;
 	List<Prestamo> prestamos = new ArrayList<>();
 	PrestamoDAO prestamoDAO = new PrestamoDAO();
+	SingleValueSearch sv = new SingleValueSearch();
 	
 	public PrestamoDAO getPrestamoDAO() {
 		return prestamoDAO;
@@ -133,18 +133,37 @@ public class BookLoanManager implements DatabaseManager<Prestamo, PrestamoDAO> {
 			
 		case "A":
 			
-			System.out.println("id_prestamo: ");
-			id_prestamo = Integer.valueOf(scanner.nextLine().trim());
+			//System.out.println("id_prestamo: ");
+			//id_prestamo = Integer.valueOf(scanner.nextLine().trim());
 			
 			System.out.println("ISBN: ");
 			ISBN = scanner.nextLine().trim().toUpperCase();
-		
+			
+			String available;
+			Boolean isbnExists = sv.stringExists("tbl_inventario", ISBN, "ISBN");
+			
+
+			if (isbnExists == true) { available = sv.returnValue("tbl_prestamos", ISBN, "ISBN", "disponible", false);}	
+			else {System.out.println("Book with ISBN not in inventory!");
+			skip = true;
+			break;}
+			
+			if (available.equals("0")) {System.out.println("Book with ISBN already loaned!");
+									skip = true;
+									break;}
+			
 			System.out.println("id_miembro: ");
 			id_miembro = Integer.valueOf(scanner.nextLine().trim());
+			if(sv.integerExists("tbl_miembros", id_miembro, "id_miembro") == false) {
+				System.out.println("id_miembro doesn't exist!");
+				skip = true;
+				break;
+				}
 		
 			disponible = false;
 			fecha_prestamo=  java.sql.Date.valueOf(prestamoDAO.getLocalDate());
 			fecha_devolucion= null;
+			
 			break;
 			
 		case "U":
@@ -152,11 +171,30 @@ public class BookLoanManager implements DatabaseManager<Prestamo, PrestamoDAO> {
 			System.out.println("id_prestamo: ");
 			id_prestamo = Integer.valueOf(scanner.nextLine().trim());
 			
+			
+			try {
+			//Boolean notexists = prestamoDAO.search("id_prestamo", id_prestamo.toString()).isEmpty();
+			//prestamoDAO.integerExists(id_prestamo, "id_prestamo"); 
+			Boolean idExists = sv.integerExists("tbl_prestamos", id_prestamo, "id_prestamo");
+			if(idExists == true) {
+			
 			System.out.println("ISBN: ");
 			ISBN = scanner.nextLine().trim().toUpperCase();
+			
+			if(sv.stringExists("tbl_inventario", ISBN, "ISBN") == false) {
+			System.out.println("ISBN not in inventory!");
+			skip = true;
+			break;
+			}
 		
 			System.out.println("id_miembro: ");
 			id_miembro = Integer.valueOf(scanner.nextLine().trim());
+			
+			if(sv.integerExists("tbl_miembros", id_miembro, "id_miembro") == false) {
+				System.out.println("id_miembro doesn't exist!");
+				skip = true;
+				break;
+				}
 		
 			System.out.println("disponible (true/false): ");
 			disponible = Boolean.valueOf(scanner.nextLine().trim());
@@ -166,16 +204,35 @@ public class BookLoanManager implements DatabaseManager<Prestamo, PrestamoDAO> {
 			
 			System.out.println("fecha_devolucion(dd/mm/yyyy): ");
 			fecha_devolucion= new java.sql.Date(sdf.parse(scanner.nextLine().trim()).getTime());
+			
+			} else {System.out.println("id_prestamo does not exist! ");
+			skip = true;}} catch (Exception exception) {
+				exception.printStackTrace();}
 			break;
 			
 		case "R":
 			
+			try {
+	
+		
 			System.out.println("id_prestamo: ");
 			id_prestamo = Integer.valueOf(scanner.nextLine().trim());
+			
+			//Boolean notexists = prestamoDAO.search("id_prestamo", id_prestamo.toString()).isEmpty();
+			//if(notexists != true) {
+			
+			Boolean idExists = sv.integerExists("tbl_prestamos",id_prestamo, "id_prestamo");
+			if(idExists == true) {
 			id_miembro = 0;
 			disponible = true;
 			ISBN = "";
-			fecha_devolucion= java.sql.Date.valueOf(prestamoDAO.getLocalDate());
+			fecha_devolucion= java.sql.Date.valueOf(prestamoDAO.getLocalDate());}
+				else {System.out.println("id_prestamo does not exist! ");
+				skip = true;
+				}} 
+						catch (Exception exception) {System.out.println("id_doesnt exist");
+						skip = true;
+						exception.printStackTrace();}
 			break;
 			
 		default:
@@ -203,6 +260,7 @@ public class BookLoanManager implements DatabaseManager<Prestamo, PrestamoDAO> {
 		}} catch (Exception exception) {
 			System.out.println("Error");
 			exception.printStackTrace();
+			skip = true;
 		}
 		Prestamo prestamo = new Prestamo(id_miembro, disponible, ISBN, fecha_prestamo, fecha_devolucion, id_prestamo);
 		Validator.validate(prestamo);
@@ -221,7 +279,7 @@ public class BookLoanManager implements DatabaseManager<Prestamo, PrestamoDAO> {
 			
 			case "A":
 				System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", "Loan id",  "Member id", "ISBN", "Availability", "Loan date", "Return date", "Action");
-				System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", prestamo.getId_prestamo(),  prestamo.getId_miembro(), prestamo.getISBN(), prestamo.getDisponible(), prestamo.getFecha_prestamo(), prestamo.getFecha_devolucion(), "Add", "------ Add to batch <y/n> [Default: No]");
+				System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", "Auto Generate",  prestamo.getId_miembro(), prestamo.getISBN(), prestamo.getDisponible(), prestamo.getFecha_prestamo(), prestamo.getFecha_devolucion(), "Add", "------ Add to batch <y/n> [Default: No]");
 				//System.out.println("Add " + prestamo.getId_prestamo() + " | " + prestamo.getId_miembro() + " | " + prestamo.getISBN() + " | " + prestamo.getDisponible() + " | " + prestamo.getFecha_prestamo() + " | "  + prestamo.getFecha_devolucion() + " | "  + " ------ Add to batch <y/n> [Default: No]");
 				break;
 			case "U":
@@ -237,13 +295,17 @@ public class BookLoanManager implements DatabaseManager<Prestamo, PrestamoDAO> {
 				break;
 			}
 			
-			String option = scanner.nextLine().trim();
+			if(skip == false) {
+			option = scanner.nextLine().trim();
 				
 			if(option.toUpperCase().equals("Y")) {
 				prestamos.add(prestamo);
 				System.out.println("☑ Added to batch. ");
 		
-				} else { System.out.println("❌ Not added to batch. "); }
+				} else { System.out.println("❌ Not added to batch. "); }}
+			else { 
+			skip = false; 
+			System.out.println("❌ Record skipped: Not added to batch. ");}
 		
 		} catch (Exception exception) {
 			System.out.println("Error");

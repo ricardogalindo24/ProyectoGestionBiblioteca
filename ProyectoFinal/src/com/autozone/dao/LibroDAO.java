@@ -22,20 +22,20 @@ public class LibroDAO implements DAO<Libro, Integer> {
 		public void add(Libro libro) throws SQLException, IllegalArgumentException, IllegalAccessException {
 			Validator.validate(libro);
 			
-			String sql = "insert into tbl_inventario(id, ISBN, titulo, autor, genero) values (?,?,?,?,?)";
+			String sql = "insert into tbl_inventario(ISBN, titulo, autor, genero) values (?,?,?,?)";
 			
 			try(Connection conn = DatabaseConnection.getInstance().getConnection();
 					PreparedStatement pstmt = conn.prepareStatement(sql)){
 				
-				pstmt.setInt(1, libro.getId());
-				pstmt.setString(2, libro.getISBN());
-				pstmt.setString(3, libro.getTitulo());
-				pstmt.setString(4, libro.getAutor());
-				pstmt.setString(5, libro.getGenero());
+				//pstmt.setInt(1, libro.getId());
+				pstmt.setString(1, libro.getISBN());
+				pstmt.setString(2, libro.getTitulo());
+				pstmt.setString(3, libro.getAutor());
+				pstmt.setString(4, libro.getGenero());
 				
 				pstmt.executeUpdate();
 				
-				libro = search("id", libro.getId().toString()).get(0);
+				libro = search("ISBN", libro.getISBN()).get(0);
 				System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s\n", libro.getId(),  libro.getISBN(), libro.getTitulo(), libro.getAutor(), libro.getGenero(),"☑ Added");
 				//System.out.println(libro.getId() + " | " + libro.getISBN() + " | " + libro.getTitulo() + " | " + libro.getAutor() + " | " + libro.getGenero() + " Importado");
 				//fileManager.writeToCSV(fetchRecords());

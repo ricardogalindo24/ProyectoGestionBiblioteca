@@ -44,22 +44,37 @@ public class LoanRecords extends BookLoanManager implements Inventory{
 			//getScanner().close();
 			}
 		}
+		
+		System.out.println("Current Batch:");
 		System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", "Loan id",  "Member id", "ISBN", "availability", "Loan date", "Return date","INFO");
-		for (Prestamo p : getPrestamos()) { 
+		for (Prestamo p : getPrestamos()) {
+			System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", "Pending",  p.getId_miembro(), p.getISBN(), p.getDisponible(), p.getFecha_prestamo(), p.getFecha_devolucion(), getAction());
+		}
+		System.out.println("Do you wish to execute this batch? <y/n> [Default: No]");
+		String execute = getScanner().nextLine().trim().toUpperCase();
+		
+		switch(execute) {
 			
-			executeAction(getPrestamoDAO(), p, getAction());
+		case "Y":
+			System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", "Loan id",  "Member id", "ISBN", "availability", "Loan date", "Return date","INFO");
+			for (Prestamo p : getPrestamos()) { 
+			
+				executeAction(getPrestamoDAO(), p, getAction());
+		}
+			break;
+			
+		
 		}} else {executeAction(getPrestamoDAO(), null, getAction());
 		}
 		
 		if(!getAction().equals("E")) {
 			InputReader.getInstance().promptEnterKey(getScanner());
 			
-			}
+			}}
 			
 		}
 		
 		
-		}
 	
 	
 

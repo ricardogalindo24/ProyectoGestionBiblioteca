@@ -41,19 +41,34 @@ public class BookInventory extends BookInventoryManager implements Inventory{
 			//getScanner().close();
 			}
 		}
+		
+		System.out.println("Current Batch:");
 		System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s\n", "id",  "ISBN", "Title", "Author", "Genre","INFO");
-		for (Libro l : getLibros()) { 
+		for (Libro libro : getLibros()) {
+			System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s\n", "Pending",  libro.getISBN(), libro.getTitulo(), libro.getAutor(), libro.getGenero(), getAction());
+		}
+		System.out.println("Do you wish to execute this batch? <y/n> [Default: No]");
+		String execute = getScanner().nextLine().trim().toUpperCase();
+		
+		switch(execute) {
+		
+		case "Y":
+			System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s\n", "id",  "ISBN", "Title", "Author", "Genre","INFO");
+			for (Libro l : getLibros()) { 
 			
 			executeAction(getLibroDAO(), l, getAction());
+			} 
+			break;
+			
 		}} else {executeAction(getLibroDAO(), null, getAction());
-		}
+			}
 		
-		if(!getAction().equals("E")) {
-		InputReader.getInstance().promptEnterKey(getScanner());
+			if(!getAction().equals("E")) {
+				InputReader.getInstance().promptEnterKey(getScanner());
 		
-									}
+									}}
 					}
-	}
+	
 	
 	
 

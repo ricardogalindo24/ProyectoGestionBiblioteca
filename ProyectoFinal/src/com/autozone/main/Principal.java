@@ -1,13 +1,13 @@
 package com.autozone.main;
 
 import java.util.Scanner;
-
 import com.autozone.exceptions.IsClosedException;
 import com.autozone.subMenus.BookInventory;
 import com.autozone.subMenus.FileManagerMenu;
 import com.autozone.subMenus.LoanRecords;
 import com.autozone.subMenus.MemberList;
 import com.autozone.utils.InputReader;
+
 
 public class Principal {
 		
@@ -18,7 +18,8 @@ public class Principal {
 		InputReader inputReader = InputReader.getInstance();
 		Scanner scanner = inputReader.getScanner();
 		Boolean loop = true;
-				
+		
+	
 		System.out.println(" _________________________________________________________");
 		System.out.println("|                                                         |");
 		System.out.println("|                   LibraryManager v1.0                   |");

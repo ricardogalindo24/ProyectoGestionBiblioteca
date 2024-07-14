@@ -30,21 +30,21 @@ public class PrestamoDAO implements DAO<Prestamo, Integer> {
 
 		Validator.validate(prestamo);
 		
-		String sql = "insert into tbl_prestamos(id_prestamo, id_miembro, ISBN, disponible, fecha_prestamo, fecha_devolucion) values (?,?,?,?,?,?)";
+		String sql = "insert into tbl_prestamos(id_miembro, ISBN, disponible, fecha_prestamo, fecha_devolucion) values (?,?,?,?,?)";
 		
 		try(Connection conn = DatabaseConnection.getInstance().getConnection();
 				PreparedStatement pstmt = conn.prepareStatement(sql)){
 			
-			pstmt.setInt(1, prestamo.getId_prestamo());
-			pstmt.setInt(2, prestamo.getId_miembro());
-			pstmt.setString(3, prestamo.getISBN());
-			pstmt.setBoolean(4, prestamo.getDisponible());
-			pstmt.setDate(5, prestamo.getFecha_prestamo());
-			pstmt.setDate(6, prestamo.getFecha_devolucion());
+			//pstmt.setInt(1, prestamo.getId_prestamo());
+			pstmt.setInt(1, prestamo.getId_miembro());
+			pstmt.setString(2, prestamo.getISBN());
+			pstmt.setBoolean(3, prestamo.getDisponible());
+			pstmt.setDate(4, prestamo.getFecha_prestamo());
+			pstmt.setDate(5, prestamo.getFecha_devolucion());
 			
 			pstmt.executeUpdate();
 			
-			prestamo = search("id_prestamo", Integer.toString(prestamo.getId_prestamo())).get(0);
+			prestamo = search("ISBN", prestamo.getISBN()).get(0);
 			System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", prestamo.getId_prestamo(),  prestamo.getId_miembro(), prestamo.getISBN(), prestamo.getDisponible(), prestamo.getFecha_prestamo(),prestamo.getFecha_devolucion(),"☑ Added");
 			//System.out.println(prestamo.getId_prestamo() + " | " + prestamo.getId_miembro() + " | " + prestamo.getISBN() + " | " + prestamo.getDisponible() + " | " + prestamo.getFecha_prestamo() + prestamo.getFecha_devolucion() + " Agregado");
 			//fileManager.writeToCSV(fetchRecords());
@@ -175,7 +175,7 @@ public class PrestamoDAO implements DAO<Prestamo, Integer> {
 				
 				ResultSet rs = pstmt.executeQuery();
 				
-				Prestamo prestamo = null;
+				Prestamo prestamo = new Prestamo(0, false, "", null, null, 0);
 				
 				while (rs.next()) {
 					prestamo = new Prestamo(
@@ -196,4 +196,77 @@ public class PrestamoDAO implements DAO<Prestamo, Integer> {
 		}
 		return prestamos;
 	}
+	
+	public Boolean integerExists(Integer criteria, String field) throws SQLException{
+
+		String sql = "select " + field + " from tbl_prestamos where " + field + " = ?";
+		List<Integer> ids_prestamos = new ArrayList<Integer>();
+		Boolean integerExists;
+		Integer value;
+		
+		try(Connection conn = DatabaseConnection.getInstance().getConnection();
+				PreparedStatement pstmt = conn.prepareStatement(sql)){
+			
+			pstmt.setInt(1, Integer.valueOf(criteria));
+				
+				ResultSet rs = pstmt.executeQuery();
+				
+				while (rs.next()) {
+					value = rs.getInt(field);
+					ids_prestamos.add(value);}
+				
+				integerExists = !ids_prestamos.isEmpty();
+		}
+		return integerExists;
+	}
+	
+	public Boolean stringExists(String criteria, String field) throws SQLException{
+
+		String sql = "select " + field + " from tbl_prestamos where " + field + " = ?";
+		List<String> values = new ArrayList<String>();
+		Boolean stringExists;
+		String value;
+		
+		try(Connection conn = DatabaseConnection.getInstance().getConnection();
+				PreparedStatement pstmt = conn.prepareStatement(sql)){
+			
+			pstmt.setString(1, criteria);
+				
+				ResultSet rs = pstmt.executeQuery();
+				
+				while (rs.next()) {
+					value = rs.getString(field);
+					values.add(value);}
+				
+				stringExists = !values.isEmpty();
+		}
+		return stringExists;
+	}
+	
+	
+	public String returnValue(String criteria, String search_field, String result_field, Boolean topRow) throws SQLException{
+
+		String sql = "select " + result_field + " from tbl_prestamos where " + search_field + " = ?";
+		List<String> values = new ArrayList<String>();
+		String value;
+		String result;
+		
+		try(Connection conn = DatabaseConnection.getInstance().getConnection();
+				PreparedStatement pstmt = conn.prepareStatement(sql)){
+			
+			pstmt.setString(1, criteria);
+				
+				ResultSet rs = pstmt.executeQuery();
+				
+				while (rs.next()) {
+					value = rs.getString(result_field);
+					values.add(value);}
+				Integer elements = values.size();
+				if(topRow == true) {
+					result = values.get(0);
+				} else {result = values.get(elements - 1);}
+		}
+		return result;
+	}
+	
 }

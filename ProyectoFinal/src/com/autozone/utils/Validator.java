@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import com.autozone.annotations.NotNull;
 import com.autozone.annotations.ValidAction;
 
+
 public class Validator {
 	
 	public static void validate(Object obj) throws IllegalArgumentException, IllegalAccessException {
@@ -31,4 +32,8 @@ public class Validator {
 			
 		}
 	}
+	
+	
 }
+
+

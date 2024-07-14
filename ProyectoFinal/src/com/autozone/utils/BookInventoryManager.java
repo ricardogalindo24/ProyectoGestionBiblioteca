@@ -6,16 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import com.autozone.annotations.NotNull;
-import com.autozone.annotations.ValidAction;
 import com.autozone.dao.LibroDAO;
 import com.autozone.interfaces.DatabaseManager;
 import com.autozone.models.Libro;
 
 public class BookInventoryManager implements DatabaseManager<Libro, LibroDAO> {
-	@NotNull
-	@ValidAction
+	
 	String action;
+	String option;
 	//variable para determinar si se desean agregar mas libros a la lista de trabajo
 	Boolean loopList;
 	//Libro libro = new Libro(null,null,null,null);
@@ -25,7 +23,9 @@ public class BookInventoryManager implements DatabaseManager<Libro, LibroDAO> {
 	
 	List<Libro> libros = new ArrayList<>();
 	LibroDAO libroDAO = new LibroDAO();
+	SingleValueSearch sv = new SingleValueSearch();
 	Scanner scanner;
+	Boolean skip = false;
 	
 	
 	
@@ -107,21 +107,44 @@ public class BookInventoryManager implements DatabaseManager<Libro, LibroDAO> {
 	@Override
 	public Libro build(Scanner scanner) throws IllegalArgumentException, IllegalAccessException {
 		Integer id = null;
-		String ISBN = null;
-		String titulo = null;
-		String autor = null;
-		String genero = null;
+		String ISBN = "pending";
+		String titulo = "pending";
+		String autor = "pending";
+		String genero = "pending";
 		
 		try{ 
-		if (action.equals("D")) {
+		switch (action) {
+			
+		case "D":
 			
 			System.out.println("ID: ");
 			id = Integer.valueOf(scanner.nextLine().trim());
+			if(sv.integerExists("tbl_inventario", id, "id") == false) {System.out.println("ID not in inventory! "); skip = true; break;}
 			titulo = ("");
+			break;
 			
-		} else {
+		case "A":
+			
+			System.out.println("ISBN: ");
+			ISBN = scanner.nextLine().trim().toUpperCase();
+			
+			if(sv.stringExists("tbl_inventario", ISBN, "ISBN") == true) {System.out.println("ISBN already in inventory!! "); skip = true; break;}
+		
+			System.out.println("Título: ");
+			titulo = scanner.nextLine().trim();
+		
+			System.out.println("Autor: ");
+			autor = scanner.nextLine().trim();
+		
+			System.out.println("Género: ");
+			genero= scanner.nextLine().trim();
+			break;
+			
+		default:
 			System.out.println("id: ");
 			id = Integer.valueOf(scanner.nextLine().trim());
+			
+			if(sv.integerExists("tbl_inventario", id, "id") == false) {System.out.println("id not in inventory! "); skip = true; break;}
 			
 			System.out.println("ISBN: ");
 			ISBN = scanner.nextLine().trim().toUpperCase();
@@ -134,6 +157,7 @@ public class BookInventoryManager implements DatabaseManager<Libro, LibroDAO> {
 		
 			System.out.println("Género: ");
 			genero= scanner.nextLine().trim();
+			break;
 			
 		
 		}
@@ -159,7 +183,7 @@ public class BookInventoryManager implements DatabaseManager<Libro, LibroDAO> {
 			
 			case "A":
 				System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s\n", "id",  "ISBN", "title", "author", "Genre", "Action");
-				System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", libro.getId(),  libro.getISBN(), libro.getTitulo(), libro.getAutor(), libro.getGenero(), "Add", "------ Add to batch <y/n> [Default: No]");
+				System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", "Auto Generate",  libro.getISBN(), libro.getTitulo(), libro.getAutor(), libro.getGenero(), "Add", "------ Add to batch <y/n> [Default: No]");
 				//System.out.println("Add " + libro.getId() + " | " + libro.getISBN() + " | " + libro.getTitulo() + " | " + libro.getAutor() + " | " + libro.getGenero() + " | "  + " ------ Add to batch <y/n> [Default: No]");
 				break;
 			case "U":
@@ -169,13 +193,17 @@ public class BookInventoryManager implements DatabaseManager<Libro, LibroDAO> {
 				break;
 			}
 			
-			String option = scanner.nextLine().trim();
-				
-			if(option.toUpperCase().equals("Y")) {
-				libros.add(libro);
-				System.out.println("☑ Added to batch.");
-		
-				} else { System.out.println("❌ Not added to batch."); }
+			if(skip == false) {
+				option = scanner.nextLine().trim();
+					
+				if(option.toUpperCase().equals("Y")) {
+					libros.add(libro);
+					System.out.println("☑ Added to batch. ");
+			
+					} else { System.out.println("❌ Not added to batch. "); }}
+				else { 
+				skip = false; 
+				System.out.println("❌ Record skipped: Not added to batch. ");}
 		
 		} catch (Exception exception) {
 			System.out.println("Error");

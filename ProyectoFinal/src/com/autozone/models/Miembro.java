@@ -1,10 +1,9 @@
 package com.autozone.models;
 
-import com.autozone.annotations.NotNull;
 
 public class Miembro {
 	
-	@NotNull
+
 	private String nombre;
 	private Integer id_miembro;
 

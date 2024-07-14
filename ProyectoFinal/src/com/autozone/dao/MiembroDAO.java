@@ -20,16 +20,16 @@ public class MiembroDAO implements DAO<Miembro, Integer> {
 
 		Validator.validate(miembro);
 		
-		String sql = "insert into tbl_miembros(id_miembro, nombre) values (?, ?)";
+		String sql = "insert into tbl_miembros(nombre) values (?)";
 		
 		try(Connection conn = DatabaseConnection.getInstance().getConnection();
 				PreparedStatement pstmt = conn.prepareStatement(sql)){
 			
-			pstmt.setInt(1, miembro.getId_miembro());
-			pstmt.setString(2, miembro.getNombre());
+			//pstmt.setInt(1, miembro.getId_miembro());
+			pstmt.setString(1, miembro.getNombre());
 			pstmt.executeUpdate();
 			
-			miembro = search("id_miembro", Integer.toString(miembro.getId_miembro())).get(0);
+			miembro = search("nombre", miembro.getNombre()).get(0);
 			System.out.printf("%-20s%-20s%-20s\n", miembro.getId_miembro(),  miembro.getNombre(),"☑ Added");
 			
 			//System.out.println(miembro.getId_miembro() + " | " + miembro.getNombre() + " Añadido");

@@ -1,13 +1,11 @@
 package com.autozone.models;
 
-import com.autozone.annotations.NotNull;
 
 public class Libro {
 	
-	@NotNull
+	
 	private Integer id;
 	private String ISBN;
-	@NotNull
 	private String titulo;
 	private String autor;
 	private String genero;
